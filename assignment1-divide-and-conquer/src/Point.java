@@ -18,15 +18,6 @@ public class Point implements Comparable<Point>
         return y;
     }
 
-    public double getX()
-    {
-        return x;
-    }
-
-    public double getY()
-    {
-        return y;
-    }
 
     @Override
     public int compareTo(Point other)
@@ -36,6 +27,7 @@ public class Point implements Comparable<Point>
         {
             cmp = Double.compare(this.y, other.y);
         }
+        return Double.compare(this.y,other.y);
     }
 
     public double distanceTo(Point other)
