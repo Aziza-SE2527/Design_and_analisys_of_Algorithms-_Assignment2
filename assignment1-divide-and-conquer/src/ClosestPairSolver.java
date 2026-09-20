@@ -52,108 +52,103 @@ public class ClosestPairSolver
 
         int mid = lo + (hi - lo) / 2;
         Point midPoint = px[mid];
-        Point[] pyl = new Point[mid - lo + 1];
-        Point[] pyr = new Point[hi - mid];
-        int li = 0, ri = 0;
-        for (Point p : py)
+        List<Point> pylList = new ArrayList<>();
+        List<Point> pyrList = new ArrayList<>();
+
+        int leftCount=mid- lo + 1;
+        for(Point p : py)
         {
             comparisons++;
-            if (p.getX() < midPoint.getX() || (p.getX() == midPoint.getX() && li < pyl.length))
+            if((p.getX() < midPoint.getX() || (p.getX()==midPoint.getX() && p.getY() <= midPoint.getY()))
+                    && pylList.size() < leftCount)
             {
-                if (li < pyl.length)
-                {
-                    pyl[li++] = p;
-                }
-                else
-                {
-                    pyr[ri++] = p;
-                }
+                pylList.add(p);
             }
             else
             {
-                if (ri < pyr.length)
-                {
-                    pyr[ri++] = p;
-                }
-                else
-                {
-                    pyl[li++] = p;
-                }
+                pyrList.add(p);
             }
         }
-        Result delta1=closestRobust(px,pyl,lo,mid,depth+1);
-        Result delta2=closestRobust(px,pyr,lo,mid+1,depth+1);
-        Result d= (delta1.distance<delta2.distance) ? delta1:delta2;
+
+        Point[] pyl=pylList.toArray(new Point[0]);
+        Point[] pyr=pyrList.toArray(new Point[0]);
+
+        Result delta1=closestRobust(px,pyl,lo, mid,depth + 1);
+        Result delta2 =closestRobust(px,pyr,mid + 1,hi, depth + 1);
+
+        Result d=(delta1.distance < delta2.distance)? delta1 : delta2;
         double minDist=d.distance;
 
-        List<Point> stripList =new ArrayList<>();
-        for(Point p:py)
+        List<Point> stripList=new ArrayList<>();
+        for(Point p : py)
         {
             comparisons++;
-            if (Math.abs(p.getX()-midPoint.getX() <minDist))
+            if (Math.abs(p.getX()-midPoint.getX())<minDist)
             {
                 stripList.add(p);
             }
         }
-        for (int i=0;i<stripList.size();i++)
+
+        for(int i=0;i<stripList.size();i++)
         {
-            for(int j=i+1; j<stripList.size() &&(stripList.get(j).getY()-stripList.get(i).getY())<minDist ;j++)
+            for(int j=i+1;j<stripList.size() && (Math.abs(stripList.get(j).getY()-stripList.get(i).getY()))< minDist; j++)
             {
                 comparisons++;
                 Point p1=stripList.get(i);
                 Point p2=stripList.get(j);
-                double dist=p1.distanceTo(p2);
+                double dist = p1.distanceTo(p2);
                 if(dist<minDist)
                 {
                     minDist=dist;
-                    d=new Result(p1,p2,minDist);
+                    d=new Result(p1,p2, minDist);
                 }
             }
         }
-        return d;
 
+        return d;
     }
-    private Result bruteForce(Point[] points, int lo, int hi)
+
+    private Result bruteForce(Point[] points,int low,int high)
     {
-        double minDist=Double.MAX_VALUE;
-        Point p1=null;
-        Point p2=null;
-        for (int i=lo; i<hi; i++)
+        double minDist= Double.MAX_VALUE;
+        Point p1= null,p2 = null;
+        for (int i=low;i<= high;i++)
         {
-            for(int j=i+1; j<hi; j++)
+            for (int j =i + 1;j<= high;j++)
             {
                 comparisons++;
                 double dist = points[i].distanceTo(points[j]);
-                if(dist<minDist)
+                if (dist< minDist)
                 {
-                    minDist=dist;
-                    p1=points[i];
-                    p2=points[j];
+                    minDist= dist;
+                    p1= points[i];
+                    p2= points[j];
                 }
             }
         }
         return new Result(p1,p2,minDist);
     }
+
     public Result bruteForceAll(Point[] points)
     {
-        double minDist = Double.MAX_VALUE;
-        Point p1=null;
-        Point p2=null;
-        for (int i=0;i<points.length;i++)
+        double minDist= Double.MAX_VALUE;
+        Point p1= null,p2 = null;
+        for (int i = 0;i < points.length;i++)
         {
-            for(int j=i;j<points.length;j++)
+            for (int j =i + 1; j < points.length; j++)
             {
-                double dist=points[i].distanceTo(points[j]);
-                if(dist<minDist)
+                double dist = points[i].distanceTo(points[j]);
+                if (dist < minDist)
                 {
-                    minDist=dist;
-                    p1=points[i];
-                    p2=points[j];
+                    minDist= dist;
+                    p1= points[i];
+                    p2= points[j];
                 }
             }
         }
         return new Result(p1,p2,minDist);
     }
+
     public long getComparisons()
     {
         return comparisons;
@@ -162,5 +157,4 @@ public class ClosestPairSolver
     {
         return maxRecursionDepth;
     }
-
 }
